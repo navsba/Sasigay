@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ztk.dao.StuDao">
+    <select id="getAllStu" resultType="org.ztk.entity.Stu">
+        select * from t_stu;
+    </select>
+    <select id="getStuByName" resultType="org.ztk.entity.Stu">
+        select * from t_stu where stuname=#{stuname}
+    </select>
+    <select id="getStuByNameAndId" resultType="org.ztk.entity.Stu">
+        select * from t_stu where stuname=#{stuname} and stuid=#{stuid}
+    </select>
+<!--    <select id="getStuByNameAndId" resultType="org.ztk.entity.Stu">-->
+<!--        select * from t_stu where stuname=#{param1} and stuid=#{param2}-->
+<!--    </select>-->
+<!--    <select id="getStuByNameAndId" resultType="org.ztk.entity.Stu">-->
+<!--        select * from t_stu where stuname=#{arg0} and stuid=#{arg1}-->
+<!--    </select>-->
+
+    <select id="getStuByFuzzyQuery" resultType="Stu" parameterType="java.lang.String">
+        select * from t_stu where stuname like concat('%', #{stuname}, '%')
+    </select>
+
+    <select id="getStuByPage" resultType="Stu" parameterType="java.util.Map">
+        select * from t_stu limit #{begin} , #{end}
+    </select>
+
+    <insert id="insertStu">
+        <selectKey order="AFTER" keyProperty="stuid" resultType="int">
+            select last_insert_id()
+        </selectKey>
+        insert into t_stu (stuname, stubirthday, stuhobby, stuage, gradeid, pwd, imgpath)
+        values (#{stuname}, #{stubirthday}, #{stuhobby}, #{stuage}, #{gradeid}, #{pwd}, #{imgpath})
+    </insert>
+
+<!--
+            //多对多       stu 和 course 多对多， 需要引入   中间表t_stu_course
+            //            来转换两张表的一对多的关系
+            public List<Stu> getStuAndCourseAndMidleIntermediateTable();
+-->
+    <resultMap id="courseStu" type="Stu">
+        <id property="stuid" column="stuid"></id>
+        <collection property="courseList" ofType="Course">
+            <id property="cid" column="cid"></id>
+        </collection>
+    </resultMap>
+    <select id="getStuAndCourseAndMidleIntermediateTable" resultMap="courseStu">
+        select *
+        from t_stu a, t_course b, t_stu_course c
+        where a.stuid = c.sid and b.cid = c.cid
+    </select>
+
+
+</mapper>

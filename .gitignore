@@ -1,0 +1,15 @@
+*.class
+
+*.jar
+
+*.iml
+
+*.war
+
+.idea
+
+.out
+
+.target
+
+# db.properties
